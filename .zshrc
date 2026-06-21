@@ -34,7 +34,16 @@ zstyle ':completion:*' squeeze-slashes true
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 
 # ── Keybindings ───────────────────────────────────────────────────────────────
-bindkey -e  # Emacs keybindings
+bindkey -v  # Vim keybindings
+
+# Corrigir comportamento do backspace e deleção no modo de inserção Vi
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+bindkey '^w' backward-kill-word
+bindkey '5~' kill-word
+
+# Habilitar busca incremental no histórico usando Ctrl+R no modo Vi
+bindkey '^r' history-incremental-search-backward
 
 # ── Plugins ───────────────────────────────────────────────────────────────────
 [[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] &&
@@ -163,7 +172,12 @@ function _melo_build_ps1() {
   PS1+="${MELO_PALETTE[path]}%~%b%f"
   [[ -n $_melo_git_branch ]] && PS1+="%-${t_git}(l.${git_seg}.)"
   PS1+=$'\n'
-  PS1+="${MELO_PALETTE[typing]}╰──➤ %f"
+  
+  if [[ $KEYMAP == vicmd ]]; then
+    PS1+="%F{#80cbc4}╰──[N]──➤ %f"  # Modo Normal (Teal)
+  else
+    PS1+="${MELO_PALETTE[typing]}╰──➤ %f"       # Modo Inserção (Padrão)
+  fi
 
   local elapsed_seg=""
   if (( _melo_cmd_start > 0 )); then
@@ -181,6 +195,13 @@ function _melo_build_ps1() {
 }
 
 add-zsh-hook precmd _melo_build_ps1
+
+# Redesenhar o prompt ao alternar entre os modos do Vi (Normal e Inserção)
+function zle-keymap-select() {
+  _melo_build_ps1
+  zle reset-prompt
+}
+zle -N zle-keymap-select
 
 # Redraw on terminal resize so time and responsive parts reflow
 function _melo_winch() { zle && zle reset-prompt; }
@@ -287,3 +308,11 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export BAT_THEME="base16"
 
 alias cat='bat --paging=never --style=plain'
+
+# Hermes Agent — ensure ~/.local/bin is on PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/geko/.lmstudio/bin"
+# End of LM Studio CLI section
+
