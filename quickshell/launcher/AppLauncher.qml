@@ -717,7 +717,7 @@ PanelWindow {
                 id:    layoutView
                 width: parent.width
 
-                height:  root.layoutMode ? 412 : 0
+                height:  root.layoutMode ? 642 : 0
                 clip:    true
                 visible: height > 0
                 opacity: root.layoutMode ? 1.0 : 0.0

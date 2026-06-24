@@ -33,17 +33,22 @@ Item {
     // ── Internal ──────────────────────────────────────────────────────────
     property string _query: ""
 
-    // layout options: tile, scroller, grid, deck, monocle, center_tile, vertical_tile, vertical_scroller, dwindle
+    // All layouts supported by MangoWM (source: github.com/DreamMaoMao/mango/wiki/layouts)
     readonly property var _layouts: [
-        { name: "dwindle",           icon: "󰕢", label: "Dwindle",           desc: "Binary space partition"  },
-        { name: "tile",              icon: "󰕘", label: "Tile",              desc: "Master + stack"           },
-        { name: "vertical_tile",     icon: "󰕤", label: "Vertical Tile",     desc: "Master + vertical stack"  },
-        { name: "scroller",          icon: "󰤼", label: "Scroller",          desc: "Horizontal scroller"      },
-        { name: "vertical_scroller", icon: "󰐌", label: "Vertical Scroller", desc: "Vertical scroller"        },
-        { name: "grid",              icon: "󰙝", label: "Grid",              desc: "Equal-size grid"          },
-        { name: "deck",              icon: "󰒘", label: "Deck",              desc: "Stacked windows"          },
-        { name: "monocle",           icon: "󰆥", label: "Monocle",           desc: "Single focused window"    },
-        { name: "center_tile",       icon: "󰕦", label: "Center Tile",       desc: "Centered master"          }
+        { name: "dwindle",          icon: "󰕢", label: "Dwindle",           desc: "Binary space partition"   },
+        { name: "tile",             icon: "󰕘", label: "Tile",              desc: "Master + stack"            },
+        { name: "right_tile",       icon: "󰕤", label: "Right Tile",        desc: "Master + right stack"      },
+        { name: "vertical_tile",    icon: "󰒢", label: "Vertical Tile",     desc: "Master + vertical stack"   },
+        { name: "center_tile",      icon: "󰕦", label: "Center Tile",       desc: "Centered master"           },
+        { name: "scroller",         icon: "󰤼", label: "Scroller",          desc: "Horizontal scroller"       },
+        { name: "vertical_scroller",icon: "󰐌", label: "Vertical Scroller", desc: "Vertical scroller"         },
+        { name: "grid",             icon: "󰙝", label: "Grid",              desc: "Equal-size grid"           },
+        { name: "vertical_grid",    icon: "󱗼", label: "Vertical Grid",     desc: "Equal-size vertical grid"  },
+        { name: "deck",             icon: "󰒘", label: "Deck",              desc: "Stacked windows"           },
+        { name: "vertical_deck",    icon: "󰐗", label: "Vertical Deck",     desc: "Vertical stacked windows"  },
+        { name: "fair",             icon: "󰼀", label: "Fair",              desc: "Balanced horizontal split" },
+        { name: "vertical_fair",    icon: "󰼁", label: "Vertical Fair",     desc: "Balanced vertical split"   },
+        { name: "monocle",          icon: "󰆥", label: "Monocle",           desc: "Single focused window"     }
     ]
 
     Component.onCompleted: _applyFilter()
