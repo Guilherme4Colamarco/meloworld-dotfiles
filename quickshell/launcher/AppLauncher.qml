@@ -33,11 +33,12 @@ PanelWindow {
     property bool clipboardMode: false
     property bool emojiMode:     false
     property bool hiddenMode:    false
+    property bool layoutMode:    false
 
     // True when the app grid is the active view. Used by appView, dotsRow,
     // and the filter connections so they all reference one source of truth.
     readonly property bool appModeActive: !wallpaperMode && !clipboardMode
-                                          && !emojiMode && !hiddenMode
+                                          && !emojiMode && !hiddenMode && !layoutMode
 
     property bool isGridView: false
     property string wallpaperMediaFilter: "all"
@@ -61,23 +62,25 @@ PanelWindow {
     property bool animateWidth: false
 
     // ── Mode switching ────────────────────────────────────────────────────
-    // All four flags are set in one JS call so QML batches them into a single
+    // All five flags are set in one JS call so QML batches them into a single
     // binding evaluation pass. No intermediate all-false frame ever occurs,
     // which is what caused the dots to flash when opening clipboard/emoji/wallpaper
     // while in grid mode.
-    function _switchMode(wall, clip, emoji, hidden) {
+    function _switchMode(wall, clip, emoji, hidden, layout) {
         wallpaperMode = wall
         clipboardMode = clip
         emojiMode     = emoji
         hiddenMode    = hidden
+        layoutMode    = (layout === true)
     }
 
     function _pillText() {
         if (wallpaperMode) return "󰸉 Wallpaper"
         if (clipboardMode) return "󰅌 Clipboard"
         if (emojiMode)     return "󰞅 Emoji"
-        if (hiddenMode)    return " Hidden"
-        return ""
+        if (hiddenMode)    return " Hidden"
+        if (layoutMode)    return "󰕘 Layout"
+        return ""
     }
 
     function _placeholder() {
@@ -85,6 +88,7 @@ PanelWindow {
         if (clipboardMode) return "Search clipboard..."
         if (emojiMode)     return "Search emoji..."
         if (hiddenMode)    return "Hidden apps..."
+        if (layoutMode)    return "Search layouts..."
         return "Search..."
     }
 
@@ -93,6 +97,7 @@ PanelWindow {
         if (wallpaperMode) return 900
         if (clipboardMode) return 600
         if (emojiMode)     return 400
+        if (layoutMode)    return 520
         return isGridView  ? 740 : 600
     }
 
@@ -180,7 +185,7 @@ PanelWindow {
         if (animState === "open")   searchBar.forceActiveFocus()
         // Reset modes only after the panel has fully closed — prevents the
         // one-frame flash back to the app grid after dismissing a sub-view.
-        if (animState === "closed") root._switchMode(false, false, false, false)
+        if (animState === "closed") root._switchMode(false, false, false, false, false)
     }
 
     // ── Ctrl+G: toggle grid/list ──────────────────────────────────────────
@@ -228,6 +233,13 @@ PanelWindow {
             searchBar.clear()
             LauncherState.show()
             emojiView.load()
+            searchBar.forceActiveFocus()
+        }
+
+        function openLayout(): void {
+            root._switchMode(false, false, false, false, true)
+            searchBar.clear()
+            LauncherState.show()
             searchBar.forceActiveFocus()
         }
     }
@@ -382,6 +394,11 @@ PanelWindow {
                             searchBar.clear()
                             return
                         }
+                        if (t === "/l") {
+                            root._switchMode(false, false, false, false, true)
+                            searchBar.clear()
+                            return
+                        }
                         if (t === "/g") {
                             root.animateWidth = true
                             root.isGridView   = !root.isGridView
@@ -393,6 +410,7 @@ PanelWindow {
                     if (root.wallpaperMode)      wallpaperView.setFilter(t)
                     else if (root.clipboardMode) clipboardView.setFilter(t)
                     else if (root.emojiMode)     emojiView.setFilter(t)
+                    else if (root.layoutMode)    layoutView.setFilter(t)
                     else if (!root.hiddenMode)   filterTimer.restart()
                 }
 
@@ -401,6 +419,7 @@ PanelWindow {
                     else if (root.clipboardMode) clipboardView.navigateUp()
                     else if (root.emojiMode)     emojiView.navigateUp()
                     else if (root.hiddenMode)    hiddenAppsView.navigateUp()
+                    else if (root.layoutMode)    layoutView.navigateUp()
                     else                         appView.navigateGrid(0, -1)
                 }
                 onDownPressed: {
@@ -408,6 +427,7 @@ PanelWindow {
                     else if (root.clipboardMode) clipboardView.navigateDown()
                     else if (root.emojiMode)     emojiView.navigateDown()
                     else if (root.hiddenMode)    hiddenAppsView.navigateDown()
+                    else if (root.layoutMode)    layoutView.navigateDown()
                     else                         appView.navigateGrid(0, +1)
                 }
                 onLeftPressed: {
@@ -427,6 +447,7 @@ PanelWindow {
                     else if (root.clipboardMode) clipboardView.navigateTab()
                     else if (root.emojiMode)     emojiView.navigateTab()
                     else if (root.hiddenMode)    hiddenAppsView.navigateTab()
+                    else if (root.layoutMode)    layoutView.navigateTab()
                     else                         appView.navigateGrid(+1, 0)
                 }
                 onBacktabPressed: {
@@ -434,6 +455,7 @@ PanelWindow {
                     else if (root.clipboardMode) clipboardView.navigateBacktab()
                     else if (root.emojiMode)     emojiView.navigateBacktab()
                     else if (root.hiddenMode)    hiddenAppsView.navigateBacktab()
+                    else if (root.layoutMode)    layoutView.navigateBacktab()
                     else                         appView.navigateGrid(-1, 0)
                 }
                 onDeletePressed: {
@@ -444,6 +466,7 @@ PanelWindow {
                     else if (root.clipboardMode) clipboardView.confirm()
                     else if (root.emojiMode)     emojiView.confirm()
                     else if (root.hiddenMode)    hiddenAppsView.confirm()
+                    else if (root.layoutMode)    layoutView.confirm()
                     else {
                         if (appView.selectedIndex !== -1) {
                             var item = appView.appItemAt(appView.selectedIndex)
@@ -687,6 +710,20 @@ PanelWindow {
                         }
                     }
                 }
+            }
+
+            // ── Layout view ───────────────────────────────────────────────
+            LauncherLayoutView {
+                id:    layoutView
+                width: parent.width
+
+                height:  root.layoutMode ? 642 : 0
+                clip:    true
+                visible: height > 0
+                opacity: root.layoutMode ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+                onDismissed: { LauncherState.hide(); searchBar.clear() }
             }
 
             // ── App view ──────────────────────────────────────────────────
