@@ -1,6 +1,7 @@
 // Self-contained wallpaper picker: images/gifs (awww) + videos (mpvpaper).
 // Images dir : ~/Pictures/Wallpapers  (.jpg .jpeg .png .webp .gif .jxl .bmp .tiff .tga .webp .avif .pnm .farbfeld .svg)
-// Videos dir : ~/Videos/Wallpapers    (.mp4 .mkv .webm .mov .avi .flv .wmv .ts .m4v .ogv)
+// Videos dir : ~/Vídeos/Wallpapers    (.mp4 .mkv .webm .mov .avi .flv .wmv .ts .m4v .ogv)
+// Legacy ~/Videos/Wallpapers is kept as a symlink for compatibility.
 // Thumbnails  : cached in ~/.cache/meloworld/wallpaper-thumbs/ via ffmpeg
 // Daemon      : awww-daemon for images/gifs; mpvpaper for videos (ALL outputs)
 // State       : last wallpaper persisted to ~/.cache/meloworld/last-wallpaper for restore on login
@@ -114,7 +115,7 @@ Item {
             "-o -iname '*.tga' -o -iname '*.avif' -o -iname '*.pnm' -o -iname '*.svg' \\) " +
             "2>/dev/null | sort | sed 's/$/ IMAGE/'; " +
             // Videos (mpvpaper/mpv-supported formats)
-            "find \"$HOME/Videos/Wallpapers\" -type f \\( " +
+            "find \"$HOME/Vídeos/Wallpapers\" -type f \\( " +
             "-iname '*.mp4' -o -iname '*.mkv' -o -iname '*.webm' -o -iname '*.mov' " +
             "-o -iname '*.avi' -o -iname '*.flv' -o -iname '*.wmv' " +
             "-o -iname '*.ts' -o -iname '*.m4v' -o -iname '*.ogv' \\) " +
