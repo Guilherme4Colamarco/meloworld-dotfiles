@@ -68,7 +68,7 @@ workspace pills slide in when you open something and slide out when you close it
 ![emoji](assets/emoji.png)
 ![wallpaper selector](assets/wallpaper-selector.png)
 
-a custom launcher built in quickshell, with modes. aimed to replace rofi for more flexibility. also supports switcheroo-control (like gnome and cosmic). you can switch between modes with the prefixes. /h for hidden apps, /w for wallpapers, /g for grid-list view switch. wallpapers support animated wallpapers and are pulled from ~/Pictures/Wallpapers and ~/Videos/Wallpapers/, just drop yours in.
+a custom launcher built in quickshell, with modes. aimed to replace rofi for more flexibility. also supports switcheroo-control (like gnome and cosmic). you can switch between modes with the prefixes. /h for hidden apps, /w for wallpapers, /g for grid-list view switch. wallpapers support animated wallpapers: images are pulled from ~/Pictures/Wallpapers and videos from ~/Vídeos/Wallpapers/ (legacy ~/Videos/Wallpapers is kept as a symlink), just drop yours in.
 
 </details>
 
