@@ -100,7 +100,7 @@
       "enabled": true
     },
     "browseros": {
-      "url": "http://127.0.0.1:9201/mcp",
+      "url": "http://127.0.0.1:9200/mcp",
       "source": "custom",
       "enabled": true
     }
