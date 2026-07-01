@@ -7,7 +7,7 @@ Pill {
     hoverReveal: true
     forceReveal: SessionState.bluetoothPopupVisible
     pillColor: (adapter && adapter.enabled) ? PanelColors.bluetooth : PanelColors.rowBackground
-    textColor: (adapter && adapter.enabled) ? PanelColors.pillForeground : PanelColors.textMain
+    textColor: (adapter && adapter.enabled) ? PanelColors.textMain : PanelColors.textDim
     property var adapter: Bluetooth.defaultAdapter
     property var connectedDevices: Bluetooth.devices
     label: {

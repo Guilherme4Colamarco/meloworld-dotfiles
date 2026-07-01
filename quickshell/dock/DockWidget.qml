@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import "."
 import "../theme"
 
@@ -17,8 +18,8 @@ PanelWindow {
     WlrLayershell.layer: WlrLayershell.Top
     color: "transparent"
 
-    readonly property int margin:     8
-    readonly property int pillHeight: 64
+    readonly property int margin:     DockConfig.margin
+    readonly property int pillHeight: DockConfig.iconSize + 24
     readonly property int fullHeight: pillHeight + margin * 2
     implicitHeight: fullHeight
 
@@ -26,11 +27,45 @@ PanelWindow {
         item: dockVisible ? pill : triggerStrip
     }
 
+    // ── Backend detection ──────────────────────────────────────────────────
+    readonly property bool isHyprland: Hyprland.requestSocketPath !== ""
+
     // ── state ──────────────────────────────────────────────────────
-    property bool windowsPresent: false
+    property bool mangoWindowsPresent: false
     property bool hovering:       false
     property bool anyMenuOpen:    false
-    readonly property bool dockVisible: !windowsPresent || hovering || anyMenuOpen
+
+    readonly property bool hyprWindowsPresent: {
+        if (!dock.isHyprland || !Hyprland.focusedWorkspace) return false
+        var tops = Hyprland.focusedWorkspace.toplevels
+        if (tops) {
+            if (tops.values !== undefined) return tops.values.length > 0
+            if (tops.count !== undefined) return tops.count > 0
+        }
+        return false
+    }
+
+    readonly property bool windowsPresent: dock.isHyprland ? dock.hyprWindowsPresent : dock.mangoWindowsPresent
+    readonly property bool dockVisible: !DockConfig.autoHide || !windowsPresent || hovering || anyMenuOpen
+
+    Connections {
+        target: Hyprland
+        enabled: dock.isHyprland
+
+        function onRawEvent(arg1, arg2) {
+            const eventName = typeof arg1 === "string" ? arg1 : (arg1.name || "")
+            const relevant = ["openwindow", "closewindow", "movewindow", "workspace", "focusedmon"]
+            if (relevant.indexOf(eventName) !== -1) {
+                Hyprland.refreshWorkspaces()
+                Hyprland.refreshToplevels()
+            }
+        }
+
+        function onFocusedWorkspaceChanged() {
+            Hyprland.refreshWorkspaces()
+            Hyprland.refreshToplevels()
+        }
+    }
 
     // ── hide debounce ──────────────────────────────────────────────
     Timer {
@@ -59,8 +94,8 @@ PanelWindow {
     Process {
         id: watchTagsProc
         command: ["mmsg", "watch", "all-tags"]
-        running: true
-        onRunningChanged: if (!running) tagsRestartTimer.start()
+        running: !dock.isHyprland
+        onRunningChanged: if (!running && !dock.isHyprland) tagsRestartTimer.start()
         stdout: SplitParser {
             onRead: (line) => {
                 var trimmed = line.trim()
@@ -71,7 +106,7 @@ PanelWindow {
                     if (monitors.length === 0) return
                     var tags = monitors[0]["tags"] || []
                     var active = tags.find(t => t["is_active"])
-                    if (active) dock.windowsPresent = active["client_count"] > 0
+                    if (active) dock.mangoWindowsPresent = active["client_count"] > 0
                 } catch (e) {
                     console.warn("DockWidget parse error:", e)
                 }
@@ -114,7 +149,6 @@ PanelWindow {
             border.color: PanelColors.border
             Behavior on border.color { ColorAnimation { duration: PanelColors.transitionDuration } }
             border.width: 3
-            opacity:      0.95
         }
 
         RowLayout {
@@ -130,6 +164,7 @@ PanelWindow {
                     iconName: modelData.icon
                     steamId:  modelData.steamId  ?? ""
                     execName: modelData.execName ?? ""
+                    iconSize: DockConfig.iconSize
                 }
             }
         }

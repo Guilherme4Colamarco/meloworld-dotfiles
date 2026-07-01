@@ -1,7 +1,6 @@
 // Self-contained wallpaper picker: images/gifs (awww) + videos (mpvpaper).
-// Images dir : ~/Pictures/Wallpapers  (.jpg .jpeg .png .webp .gif .jxl .bmp .tiff .tga .webp .avif .pnm .farbfeld .svg)
+// Images dirs: ~/Pictures/Wallpapers + ~/Imagens/Wallpapers
 // Videos dir : ~/Vídeos/Wallpapers    (.mp4 .mkv .webm .mov .avi .flv .wmv .ts .m4v .ogv)
-// Legacy ~/Videos/Wallpapers is kept as a symlink for compatibility.
 // Thumbnails  : cached in ~/.cache/meloworld/wallpaper-thumbs/ via ffmpeg
 // Daemon      : awww-daemon for images/gifs; mpvpaper for videos (ALL outputs)
 // State       : last wallpaper persisted to ~/.cache/meloworld/last-wallpaper for restore on login
@@ -108,13 +107,14 @@ Item {
         id: scanProc
         command: [
             "bash", "-c",
-            // Images (awww-supported formats)
-            "find \"$HOME/Pictures/Wallpapers\" -type f \\( " +
+            // Images (awww-supported formats). Include localized Imagens too.
+            "find \"$HOME/Pictures/Wallpapers\" \"$HOME/Imagens/Wallpapers\" -type f \\( " +
             "-iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' " +
             "-o -iname '*.gif' -o -iname '*.jxl' -o -iname '*.bmp' -o -iname '*.tiff' " +
             "-o -iname '*.tga' -o -iname '*.avif' -o -iname '*.pnm' -o -iname '*.svg' \\) " +
-            "2>/dev/null | sort | sed 's/$/ IMAGE/'; " +
-            // Videos (mpvpaper/mpv-supported formats)
+            "2>/dev/null | sort -u | sed 's/$/ IMAGE/'; " +
+            // Videos (mpvpaper/mpv-supported formats). Use canonical localized path;
+            // ~/Videos/Wallpapers is a compatibility symlink and find does not follow it.
             "find \"$HOME/Vídeos/Wallpapers\" -type f \\( " +
             "-iname '*.mp4' -o -iname '*.mkv' -o -iname '*.webm' -o -iname '*.mov' " +
             "-o -iname '*.avi' -o -iname '*.flv' -o -iname '*.wmv' " +
@@ -229,6 +229,10 @@ Item {
             wallpaperSetProc.command = ["bash", "-c", script]
             wallpaperSetProc.running = false
             wallpaperSetProc.running = true
+
+            // Do not rely only on FileView noticing last-wallpaper writes.
+            // Trigger Iris immediately so Quickshell colors follow the selected wallpaper.
+            IrisColors.loadWallpaperText(mediaType + ":" + path)
         }
     }
 

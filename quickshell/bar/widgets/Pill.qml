@@ -4,7 +4,9 @@ import "../../theme"
 Rectangle {
     id: root
     property color pillColor: PanelColors.audio
-    property color textColor: PanelColors.pillForeground
+    // Top-bar pills are neutral/dark now, so default text must be readable
+    // foreground. Use pillForeground only inside true bright/accent-filled buttons.
+    property color textColor: PanelColors.textMain
     property string label: ""
     property string widestLabel: ""
     property int minWidth: 0
@@ -71,11 +73,17 @@ Rectangle {
     }
 
     radius: 5
-    color: mouseArea.containsMouse ? Qt.lighter(pillColor, 1.15) : pillColor
+    // Keep every top-bar pill neutral/dark. Individual widgets may still pass
+    // pillColor for semantic state, but the fill itself no longer becomes a
+    // bright accent block.
+    color: mouseArea.containsMouse ? PanelColors.pillHover : PanelColors.pillBackground
+    border.width: 1
+    border.color: mouseArea.containsMouse ? PanelColors.pillBorder : "transparent"
     scale: mouseArea.containsMouse ? 1.03 : 1.0
     clip: true
 
     Behavior on color { ColorAnimation { duration: 200 } }
+    Behavior on border.color { ColorAnimation { duration: 200 } }
     Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
     MouseArea {

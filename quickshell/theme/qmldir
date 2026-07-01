@@ -10,3 +10,5 @@ singleton SystemTogglesState 1.0 SystemTogglesState.qml
 singleton ThemeState 1.0 ThemeState.qml
 singleton LauncherState 1.0 LauncherState.qml
 singleton KbdBrightnessState 1.0 KbdBrightnessState.qml
+singleton IrisColors 1.0 IrisColors.qml
+singleton WallpaperState 1.0 WallpaperState.qml

@@ -33,7 +33,7 @@ Pill {
     }
 
     pillColor: (connected || NetworkState.ethernetConnected) ? PanelColors.network : PanelColors.rowBackground
-    textColor: (connected || NetworkState.ethernetConnected) ? PanelColors.pillForeground : PanelColors.textMain
+    textColor: (connected || NetworkState.ethernetConnected) ? PanelColors.textMain : PanelColors.textDim
 
     mouseArea.onClicked: function(mouse) {
         if (SessionState.wifiPopupVisible) {

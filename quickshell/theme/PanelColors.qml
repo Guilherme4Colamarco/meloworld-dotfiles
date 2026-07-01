@@ -5,83 +5,87 @@ import Quickshell.Services.UPower
 import "."
 
 Singleton {
-    readonly property bool isDark: ThemeState.isDark
+    readonly property bool isDark: IrisColors.isDark
     readonly property int transitionDuration: 250
 
-    // Light theme definitions (Clean & Neutral, No Pure White)
-    readonly property color lightBarBackground:    Colors.grey100
-    readonly property color lightPopupBackground:  Colors.grey50
-    readonly property color lightRowBackground:    Colors.grey200
-    readonly property color lightTrackBackground:  Colors.grey300
-    readonly property color lightBorder:           Colors.blueGrey100
-    readonly property color lightTextMain:         Colors.blueGrey900
-    readonly property color lightTextAccent:       Colors.blueGrey800
-    readonly property color lightTextDim:          Colors.blueGrey400
-
     // Surfaces
-    readonly property color barBackground:     isDark ? Colors.grey900 : lightBarBackground
-    readonly property color pillForeground:    isDark ? Colors.grey900 : Colors.blueGrey900
+    readonly property color barBackground:     IrisColors.bg
+    // Bar pills should read as the darkest neutral part of the Iris palette,
+    // not as separate colored blocks. Accent colors still exist for popups,
+    // rings and borders elsewhere, but the top-bar pill fill stays neutral.
+    readonly property color pillBackground:    IrisColors.bg
+    readonly property color pillHover:         IrisColors.surface
+    readonly property color pillBorder:        IrisColors.dim
+    // Foreground used on colored/accent blocks. Keep it deliberately dark in
+    // dark mode so labels/icons read as the opposite of bright accent fills.
+    readonly property color pillForeground:    isDark ? "#101216" : "#f6f1e7"
     readonly property color overlayBackground: "#66000000"
 
     // Accents
-    readonly property color launcher:          isDark ? Colors.teal200 : Colors.teal200
-    readonly property color battery:           isDark ? Colors.orange200 : Colors.orange200
-    readonly property color network:           isDark ? Colors.purple200 : Colors.purple200
-    readonly property color audio:             isDark ? Colors.teal200 : Colors.teal200
-    readonly property color clock:             isDark ? Colors.white : Colors.lightBlue200
-    readonly property color date:              isDark ? Colors.green200 : Colors.green200
-    readonly property color brightness:        isDark ? Colors.yellow200 : Colors.orange200
-    readonly property color bluetooth:         isDark ? Colors.lightBlue200 : Colors.lightBlue200
-    readonly property color session:           isDark ? Colors.red200 : Colors.red200
-    readonly property color dashboard:         isDark ? Colors.blueGrey700 : Colors.grey200
+    readonly property color launcher:          IrisColors.accent
+    readonly property color battery:           IrisColors.yellow
+    readonly property color network:           IrisColors.accent
+    readonly property color audio:             IrisColors.accent
+    readonly property color clock:             IrisColors.fg
+    readonly property color date:              IrisColors.green
+    readonly property color brightness:        IrisColors.yellow
+    readonly property color bluetooth:         IrisColors.accent
+    readonly property color session:           IrisColors.red
+    readonly property color dashboard:         IrisColors.surface
 
-    readonly property color tray:              isDark ? Colors.grey800 : Colors.grey100
-    readonly property color workspaceActive:   isDark ? Colors.white : Colors.teal200
-    readonly property color workspaceInactive: isDark ? Colors.grey800 : Colors.grey200
-    readonly property color titleBackground:   isDark ? Colors.grey800 : Colors.grey100
-    readonly property color titleForeground:   isDark ? Colors.white : Colors.blueGrey700
+    readonly property color tray:              IrisColors.surface
+    readonly property color workspaceActive:   IrisColors.fg
+    readonly property color workspaceInactive: IrisColors.surface
+    readonly property color titleBackground:   IrisColors.surface
+    readonly property color titleForeground:   IrisColors.fg
 
-    readonly property color popupBackground:   isDark ? Colors.grey900 : lightPopupBackground
-    readonly property color rowBackground:     isDark ? Colors.grey800 : lightRowBackground
-    readonly property color trackBackground:   isDark ? Qt.rgba(1, 1, 1, 0.15) : lightTrackBackground
-    readonly property color border:            isDark ? Colors.grey700 : lightBorder
+    readonly property color popupBackground:   IrisColors.bg
+    readonly property color rowBackground:     IrisColors.surface
+    readonly property color trackBackground:   IrisColors.dim
+    readonly property color border:            IrisColors.dim
 
     // Text
-    readonly property color textMain:          isDark ? Colors.grey200 : lightTextMain
-    readonly property color textDim:           isDark ? Colors.grey500 : lightTextDim
-    readonly property color textAccent:        isDark ? Colors.white : lightTextAccent
-    readonly property color textBox:           isDark ? "#2d2d2d" : "#f5f5f5"
-    readonly property color textBoxDim:        isDark ? Colors.grey700 : blueGrey400
+    // High-contrast text layer: bright on dark neutral cards, dark on bright
+    // accent pills. Avoid using Iris dim directly for UI labels because it can
+    // land too close to row/card backgrounds depending on the wallpaper.
+    readonly property color textMain:          isDark ? "#f7f1e6" : "#101216"
+    readonly property color textDim:           isDark ? "#c9c2b5" : "#424a57"
+    // Accent-colored text/icons on neutral dark surfaces. Do not use
+    // pillForeground here: pillForeground is deliberately dark for text placed
+    // on bright/accent-filled buttons.
+    readonly property color textAccent:        IrisColors.accent
+    readonly property color textBox:           IrisColors.surface
+    readonly property color textBoxDim:        isDark ? "#a79f91" : "#5b6472"
 
     // Status
-    readonly property color scanning:          isDark ? Colors.teal400 : Colors.teal400
-    readonly property color networkScanning:   isDark ? Colors.deepPurple200 : Colors.deepPurple200
-    readonly property color pairing:           isDark ? Colors.yellow600 : Colors.yellow600
-    readonly property color error:             isDark ? Colors.red200 : Colors.red200
+    readonly property color scanning:          IrisColors.accent
+    readonly property color networkScanning:   IrisColors.accent
+    readonly property color pairing:           IrisColors.yellow
+    readonly property color error:             IrisColors.red
 
     // Dashboard specific
-    readonly property color dashboardBackground: isDark ? Qt.rgba(0.08, 0.08, 0.09, 0.98) : Qt.rgba(0.95, 0.95, 0.96, 0.98)
-    readonly property color dashboardCard:       isDark ? Colors.grey800 : Colors.grey200
-    readonly property color dashboardAccent:     isDark ? Colors.lightBlue200 : Colors.lightBlue200
-    readonly property color dashboardStripe:     isDark ? Colors.blueGrey700 : Colors.blueGrey200
+    readonly property color dashboardBackground: IrisColors.bg
+    readonly property color dashboardCard:       IrisColors.surface
+    readonly property color dashboardAccent:     IrisColors.accent
+    readonly property color dashboardStripe:     IrisColors.dim
 
-    readonly property color profile:           isDark ? Colors.green200 : Colors.green400
-    readonly property color system:            isDark ? Colors.blue200 : Colors.blue400
+    readonly property color profile:           IrisColors.green
+    readonly property color system:            IrisColors.accent
 
-    readonly property color cpuRing:           isDark ? Colors.red200 : Colors.red200
-    readonly property color ramRing:           isDark ? Colors.blue200 : Colors.blue200
-    readonly property color gpuRing:           isDark ? Colors.green200 : Colors.green200
+    readonly property color cpuRing:           IrisColors.red
+    readonly property color ramRing:           IrisColors.accent
+    readonly property color gpuRing:           IrisColors.green
 
     // Functions
     function profileColor(profile) {
-        if (profile === PowerProfile.PowerSaver)  return Colors.green200
-        if (profile === PowerProfile.Performance) return Colors.red200
-        return Colors.orange200
+        if (profile === PowerProfile.PowerSaver)  return IrisColors.green
+        if (profile === PowerProfile.Performance) return IrisColors.red
+        return IrisColors.yellow
     }
 
     property var _hashCache: ({})
     function hashColor(str) {
-        if (!str || str === "") return isDark ? Colors.blueGrey300 : Colors.blueGrey400
+        if (!str || str === "") return IrisColors.dim
         if (_hashCache[str + isDark]) return _hashCache[str + isDark]
 
         var hash = 0
@@ -90,16 +94,9 @@ Singleton {
             hash = hash & hash
         }
 
-        var palette = isDark ? [
-            Colors.teal200, Colors.lightBlue200, Colors.green200,
-            Colors.purple200, Colors.orange200, Colors.pink200,
-            Colors.yellow200, Colors.cyan200, Colors.deepPurple200,
-            Colors.blueGrey300
-        ] : [
-            Colors.teal300, Colors.lightBlue300, Colors.green400,
-            Colors.purple300, Colors.orange300, Colors.pink300,
-            Colors.yellow700, Colors.cyan300, Colors.deepPurple300,
-            Colors.blueGrey400
+        var palette = [
+            IrisColors.accent, IrisColors.green, IrisColors.yellow,
+            IrisColors.red, IrisColors.fg, IrisColors.dim
         ]
 
         var result = palette[Math.abs(hash) % palette.length]

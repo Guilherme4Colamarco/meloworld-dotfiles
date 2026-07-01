@@ -22,7 +22,7 @@ Pill {
 
     // ── Pill Configuration ────────────────────────
     pillColor: isEffectivelyMuted ? PanelColors.rowBackground : PanelColors.audio
-    textColor: isEffectivelyMuted ? PanelColors.textMain : PanelColors.pillForeground
+    textColor: isEffectivelyMuted ? PanelColors.textDim : PanelColors.textMain
 
     widestLabel: "󰕾 100%"
     label: {

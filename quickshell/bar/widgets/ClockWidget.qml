@@ -67,7 +67,7 @@ Pill {
         property var timeDate: clock.date
         onTimeDateChanged: requestPaint()
 
-        readonly property color fgColor: PanelColors.pillForeground
+        readonly property color fgColor: PanelColors.textMain
         onFgColorChanged: requestPaint()
 
         onPaint: {
@@ -80,7 +80,7 @@ Pill {
             var r = width / 2 - 1
 
             // Outline
-            ctx.strokeStyle = PanelColors.pillForeground
+            ctx.strokeStyle = PanelColors.textMain
             ctx.lineWidth = 2
             ctx.beginPath()
             ctx.arc(cx, cy, r, 0, Math.PI * 2)
@@ -114,7 +114,7 @@ Pill {
         font.pixelSize: 16
         font.bold: true
         font.family: "JetBrainsMono Nerd Font"
-        color: PanelColors.pillForeground
+        color: PanelColors.textMain
         Behavior on color { ColorAnimation { duration: PanelColors.transitionDuration } }
     }
 
@@ -138,7 +138,7 @@ Pill {
             text: ""
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 16
-            color: PanelColors.pillForeground
+            color: PanelColors.textMain
             Behavior on color { ColorAnimation { duration: PanelColors.transitionDuration } }
         }
     }
@@ -168,7 +168,7 @@ Pill {
                     id: bar
                     width: 2.2
                     radius: width / 2
-                    color: PanelColors.pillForeground
+                    color: PanelColors.textMain
                     Behavior on color { ColorAnimation { duration: PanelColors.transitionDuration } }
                     anchors.verticalCenter: parent.verticalCenter
 

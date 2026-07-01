@@ -1,0 +1,108 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "cli_default_open_behavior": "existing_window",
+  "agent_ui_font_size": 20.0,
+  "ui_font_weight": 550.0,
+  "buffer_line_height": "comfortable",
+  "buffer_font_weight": 550.0,
+  "agent": {
+    "inline_assistant_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-6",
+      "enable_thinking": false
+    },
+    "tool_permissions": {
+      "tools": {
+        "mcp:browseros:screenshot": {
+          "default": "allow"
+        },
+        "delete_path": {
+          "always_allow": [
+            {
+              "pattern": "^rev_pratica/"
+            }
+          ]
+        },
+        "terminal": {
+          "default": "allow",
+          "always_allow": [
+            {
+              "pattern": "^javac\\s+java/A1/Q1\\.java(\\s|$)"
+            },
+            {
+              "pattern": "^head\\b"
+            }
+          ]
+        }
+      }
+    },
+    "profiles": {
+      "yolo": {
+        "name": "yolo",
+        "tools": {},
+        "enable_all_context_servers": false,
+        "context_servers": {}
+      }
+    },
+    "default_profile": "write",
+    "default_model": {
+      "effort": "high",
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-6",
+      "enable_thinking": true
+    },
+    "favorite_models": [
+      {
+        "provider": "Hermes",
+        "model": "Hermes"
+      }
+    ],
+    "model_parameters": [],
+    "models": {
+      "Hermes": {
+        "type": "custom",
+        "command": "/home/geko/.hermes/hermes-agent/venv/bin/python",
+        "args": [
+          "-m",
+          "hermes_cli.main",
+          "acp"
+        ],
+        "env": {
+          "HERMES_HOME": "/home/geko/.hermes",
+          "PATH": "/home/geko/.hermes/hermes-agent/venv/bin:/home/geko/.local/bin:/usr/bin:/bin"
+        }
+      }
+    }
+  },
+  "session": {
+    "trust_all_worktrees": true
+  },
+  "vim_mode": true,
+  "icon_theme": "Zed (Default)",
+  "ui_font_size": 19.0,
+  "buffer_font_size": 17.0,
+  "theme": {
+    "mode": "system",
+    "light": "Gruvbox Dark",
+    "dark": "Gruvbox Dark Hard"
+  },
+  "context_servers": {
+    "hermes": {
+      "url": "http://127.0.0.1:8642/mcp",
+      "source": "custom",
+      "enabled": true
+    },
+    "browseros": {
+      "url": "http://127.0.0.1:9201/mcp",
+      "source": "custom",
+      "enabled": true
+    }
+  }
+}

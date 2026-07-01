@@ -113,7 +113,7 @@ Item {
 
         QuickToggle {
             icon: ThemeState.isDark ? "" : ""
-            label: ThemeState.isDark ? "Dark Mode" : "Light Mode"
+            label: ThemeState.isDark ? "Iris Dark" : "Iris Light"
             active: ThemeState.isDark
             accentColor: ThemeState.isDark ? PanelColors.brightness : Colors.yellow700
             onClicked: ThemeState.toggleTheme()

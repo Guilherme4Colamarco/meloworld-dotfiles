@@ -75,7 +75,7 @@ Item {
     // ── JSON loader (runs once) ───────────────────────────────────────────
     Process {
         id: loaderProc
-        command: ["cat", Quickshell.configDir + "/assets/emoji.json"]
+        command: ["cat", Quickshell.shellDir + "/assets/emoji.json"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {

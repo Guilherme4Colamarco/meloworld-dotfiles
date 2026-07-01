@@ -15,10 +15,13 @@ Row {
             implicitWidth: 32
             implicitHeight: 28
             radius: 5
-            color: trayMouse.containsMouse ? Qt.lighter(PanelColors.tray, 1.15) : PanelColors.tray
+            color: trayMouse.containsMouse ? PanelColors.pillHover : PanelColors.pillBackground
+            border.width: trayMouse.containsMouse ? 1 : 0
+            border.color: PanelColors.pillBorder
             scale: trayMouse.containsMouse ? 1.03 : 1.0
 
             Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: 150 } }
             Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutSine } }
 
             Image {

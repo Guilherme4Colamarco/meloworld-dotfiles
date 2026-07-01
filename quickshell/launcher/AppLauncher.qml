@@ -18,7 +18,9 @@ PanelWindow {
     exclusiveZone:  0
 
     WlrLayershell.layer:         WlrLayershell.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    // App launcher needs the keyboard grab while open; OnDemand can leave the
+    // TextInput visually focused but without real key events under MangoWM.
+    WlrLayershell.keyboardFocus: LauncherState.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
     color:   "transparent"
     visible: animState !== "closed"
@@ -33,11 +35,13 @@ PanelWindow {
     property bool clipboardMode: false
     property bool emojiMode:     false
     property bool hiddenMode:    false
+    property bool layoutMode:    false
 
     // True when the app grid is the active view. Used by appView, dotsRow,
     // and the filter connections so they all reference one source of truth.
     readonly property bool appModeActive: !wallpaperMode && !clipboardMode
                                           && !emojiMode && !hiddenMode
+                                          && !layoutMode
 
     property bool isGridView: false
     property string wallpaperMediaFilter: "all"
@@ -65,11 +69,12 @@ PanelWindow {
     // binding evaluation pass. No intermediate all-false frame ever occurs,
     // which is what caused the dots to flash when opening clipboard/emoji/wallpaper
     // while in grid mode.
-    function _switchMode(wall, clip, emoji, hidden) {
+    function _switchMode(wall, clip, emoji, hidden, layout) {
         wallpaperMode = wall
         clipboardMode = clip
         emojiMode     = emoji
         hiddenMode    = hidden
+        layoutMode    = layout
     }
 
     function _pillText() {
@@ -77,6 +82,7 @@ PanelWindow {
         if (clipboardMode) return "󰅌 Clipboard"
         if (emojiMode)     return "󰞅 Emoji"
         if (hiddenMode)    return " Hidden"
+        if (layoutMode)    return "󰕮 Layout"
         return ""
     }
 
@@ -85,6 +91,7 @@ PanelWindow {
         if (clipboardMode) return "Search clipboard..."
         if (emojiMode)     return "Search emoji..."
         if (hiddenMode)    return "Hidden apps..."
+        if (layoutMode)    return "Search layouts..."
         return "Search..."
     }
 
@@ -93,6 +100,7 @@ PanelWindow {
         if (wallpaperMode) return 900
         if (clipboardMode) return 600
         if (emojiMode)     return 400
+        if (layoutMode)    return 620
         return isGridView  ? 740 : 600
     }
 
@@ -162,6 +170,7 @@ PanelWindow {
             if (LauncherState.visible) {
                 appView.closeHiddenMenu()
                 if (root.appModeActive) filterTimer.restart()
+                focusDelay.restart()
             } else {
                 appView.closeHiddenMenu()
             }
@@ -176,11 +185,20 @@ PanelWindow {
         function onUsageMapChanged()   { if (root.appModeActive) filterTimer.restart() }
     }
 
+    Timer {
+        id: focusDelay
+        interval: 80
+        onTriggered: searchBar.forceActiveFocus()
+    }
+
     onAnimStateChanged: {
-        if (animState === "open")   searchBar.forceActiveFocus()
+        if (animState === "open") {
+            searchBar.forceActiveFocus()
+            focusDelay.restart()
+        }
         // Reset modes only after the panel has fully closed — prevents the
         // one-frame flash back to the app grid after dismissing a sub-view.
-        if (animState === "closed") root._switchMode(false, false, false, false)
+        if (animState === "closed") root._switchMode(false, false, false, false, false)
     }
 
     // ── Ctrl+G: toggle grid/list ──────────────────────────────────────────
@@ -200,7 +218,7 @@ PanelWindow {
 
         function toggle(): void {
             if (!LauncherState.visible) {
-                root._switchMode(false, false, false, false)
+                root._switchMode(false, false, false, false, false)
                 root.currentPage = 0
                 searchBar.clear()
             }
@@ -228,6 +246,14 @@ PanelWindow {
             searchBar.clear()
             LauncherState.show()
             emojiView.load()
+            searchBar.forceActiveFocus()
+        }
+
+        function openLayout(): void {
+            root._switchMode(false, false, false, false, true)
+            searchBar.clear()
+            LauncherState.show()
+            layoutView.setFilter("")
             searchBar.forceActiveFocus()
         }
     }
@@ -262,7 +288,10 @@ PanelWindow {
         HoverHandler {
             onHoveredChanged: {
                 if (hovered) {
-                    root.requestActivate()
+                    // PanelWindow does not expose an activation method in this
+                    // Quickshell version. Focusing the search bar is enough to
+                    // keep keyboard navigation alive without throwing runtime
+                    // errors every time the launcher is hovered.
                     searchBar.forceActiveFocus()
                 }
             }
@@ -393,6 +422,7 @@ PanelWindow {
                     if (root.wallpaperMode)      wallpaperView.setFilter(t)
                     else if (root.clipboardMode) clipboardView.setFilter(t)
                     else if (root.emojiMode)     emojiView.setFilter(t)
+                    else if (root.layoutMode)    layoutView.setFilter(t)
                     else if (!root.hiddenMode)   filterTimer.restart()
                 }
 
@@ -400,6 +430,7 @@ PanelWindow {
                     if      (root.wallpaperMode) wallpaperView.navigateUp()
                     else if (root.clipboardMode) clipboardView.navigateUp()
                     else if (root.emojiMode)     emojiView.navigateUp()
+                    else if (root.layoutMode)    layoutView.navigateUp()
                     else if (root.hiddenMode)    hiddenAppsView.navigateUp()
                     else                         appView.navigateGrid(0, -1)
                 }
@@ -407,6 +438,7 @@ PanelWindow {
                     if      (root.wallpaperMode) wallpaperView.navigateDown()
                     else if (root.clipboardMode) clipboardView.navigateDown()
                     else if (root.emojiMode)     emojiView.navigateDown()
+                    else if (root.layoutMode)    layoutView.navigateDown()
                     else if (root.hiddenMode)    hiddenAppsView.navigateDown()
                     else                         appView.navigateGrid(0, +1)
                 }
@@ -426,6 +458,7 @@ PanelWindow {
                     if      (root.wallpaperMode) wallpaperView.navigateTab()
                     else if (root.clipboardMode) clipboardView.navigateTab()
                     else if (root.emojiMode)     emojiView.navigateTab()
+                    else if (root.layoutMode)    layoutView.navigateTab()
                     else if (root.hiddenMode)    hiddenAppsView.navigateTab()
                     else                         appView.navigateGrid(+1, 0)
                 }
@@ -433,6 +466,7 @@ PanelWindow {
                     if      (root.wallpaperMode) wallpaperView.navigateBacktab()
                     else if (root.clipboardMode) clipboardView.navigateBacktab()
                     else if (root.emojiMode)     emojiView.navigateBacktab()
+                    else if (root.layoutMode)    layoutView.navigateBacktab()
                     else if (root.hiddenMode)    hiddenAppsView.navigateBacktab()
                     else                         appView.navigateGrid(-1, 0)
                 }
@@ -443,6 +477,7 @@ PanelWindow {
                     if      (root.wallpaperMode) wallpaperView.confirm()
                     else if (root.clipboardMode) clipboardView.confirm()
                     else if (root.emojiMode)     emojiView.confirm()
+                    else if (root.layoutMode)    layoutView.confirm()
                     else if (root.hiddenMode)    hiddenAppsView.confirm()
                     else {
                         if (appView.selectedIndex !== -1) {
@@ -689,6 +724,20 @@ PanelWindow {
                 }
             }
 
+            // ── Layout view ───────────────────────────────────────────────
+            LauncherLayoutView {
+                id:    layoutView
+                width: parent.width
+
+                height:  root.layoutMode ? 360 : 0
+                clip:    true
+                visible: height > 0
+                opacity: root.layoutMode ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+
+                onDismissed: { LauncherState.hide(); searchBar.clear() }
+            }
+
             // ── App view ──────────────────────────────────────────────────
             LauncherAppView {
                 id:           appView
@@ -722,7 +771,7 @@ PanelWindow {
                 selectedIndex: root.selectedIndex
 
                 onFilterRequested:      filterTimer.restart()
-                onSelectedIndexChanged: (idx) => { root.selectedIndex = idx }
+                onSelectedIndexChanged: { root.selectedIndex = appView.selectedIndex }
                 onPageChangeRequested:  (delta) => {
                     var next = root.currentPage + delta
                     if (next >= 0 && next < root.totalPages) root.currentPage = next

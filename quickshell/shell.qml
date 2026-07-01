@@ -8,46 +8,30 @@ import "bar"
 import "notifications"
 import "osd"
 import "dashboard"
-import "dock"
 import "launcher"
+import "wallpaper"
 import "screenshot"
 import "theme"
 
 ShellRoot {
-    // ─── Idle overlay launcher ───
-    IdleMonitor {
-        id: idleMonitor
-        timeout: 300
-        enabled: !SystemTogglesState.caffeineOn
+    property bool wallpaperPickerVisible: false
 
-        onIsIdleChanged: {
-            if (isIdle) {
-                idleOverlayProcess.running = true
-            }
-        }
+    Process { id: wallpaperPickerStateProc }
+
+    function setWallpaperPickerVisible(next) {
+        wallpaperPickerVisible = next
+        wallpaperPickerStateProc.command = ["bash", "-lc",
+            "mkdir -p \"$HOME/.cache/meloworld\" && printf '%s\\n' \"$1\" > \"$HOME/.cache/meloworld/wallpaper-picker-visible\"",
+            "wallpaper-visible", next ? "1" : "0"]
+        wallpaperPickerStateProc.running = false
+        wallpaperPickerStateProc.running = true
     }
 
-    // ─── Suspend ───
-    IdleMonitor {
-        id: suspendMonitor
-        timeout: 900
-        enabled: !SystemTogglesState.caffeineOn
-
-        onIsIdleChanged: {
-            if (isIdle) {
-                Quickshell.execDetached(["systemctl", "suspend"])
-            }
-        }
-    }
-
-    Process {
-        id: idleOverlayProcess
-        command: ["qs", "-p", Quickshell.shellPath("idle-overlay")]
-        running: false
-
-        onExited: (exitCode, exitStatus) => {
-            running = false
-        }
+    IpcHandler {
+        target: "wallpaper"
+        function toggle(): void { setWallpaperPickerVisible(!wallpaperPickerVisible) }
+        function open(): void { setWallpaperPickerVisible(true) }
+        function close(): void { setWallpaperPickerVisible(false) }
     }
 
     Variants {
@@ -128,14 +112,14 @@ ShellRoot {
             screen: modelData
         }
     }
+    PolkitDialog {}
+    AppLauncher {}
     Variants {
         model: Quickshell.screens
-        DockWidget {
+        WallpaperPicker {
             required property var modelData
             screen: modelData
         }
     }
-    PolkitDialog {}
-    AppLauncher {}
     ScreenshotUI {}
 }

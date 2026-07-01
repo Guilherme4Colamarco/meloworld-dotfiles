@@ -1,0 +1,10 @@
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      "f5": ["task: spawn", { "task_name": "Java: Executar Arquivo Atual" }],
+      "ctrl-j": "workspace::toggle_bottom_dock",
+      "ctrl-alt-t": "workspace::toggle_bottom_dock"
+    }
+  }
+]

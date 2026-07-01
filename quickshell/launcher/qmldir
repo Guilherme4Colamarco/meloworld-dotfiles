@@ -7,4 +7,5 @@ LauncherAppView 1.0 LauncherAppView.qml
 LauncherEmojiView 1.0 LauncherEmojiView.qml
 LauncherWallpaperView 1.0 LauncherWallpaperView.qml
 LauncherClipboardView 1.0 LauncherClipboardView.qml
+LauncherLayoutView 1.0 LauncherLayoutView.qml
 LauncherSearchBar 1.0 LauncherSearchBar.qml

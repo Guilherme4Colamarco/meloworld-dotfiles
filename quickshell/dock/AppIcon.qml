@@ -14,9 +14,10 @@ Item {
     property string steamId:  ""
     property string execName: ""
     property bool   appPrefersNonDefault: false
+    property int    iconSize: 40
 
-    implicitWidth:  56
-    implicitHeight: 64
+    implicitWidth:  iconSize + 16
+    implicitHeight: iconSize + 24
 
     Process {
         id: desktopReader
@@ -148,8 +149,8 @@ Item {
 
     Rectangle {
         anchors.centerIn: parent
-        width:  48
-        height: 48
+        width:  root.iconSize + 8
+        height: root.iconSize + 8
         radius: 10
         color:  hover.hovered ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
         Behavior on color { ColorAnimation { duration: 150 } }
@@ -158,7 +159,7 @@ Item {
     IconImage {
         id: icon
         anchors.centerIn: parent
-        implicitSize: 40
+        implicitSize: root.iconSize
         source: Quickshell.iconPath(root.iconName)
 
         scale: hover.hovered ? 1.1 : 1.0
